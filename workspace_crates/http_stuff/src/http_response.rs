@@ -322,8 +322,7 @@ pub fn internal_server_error_500() -> HttpResponseData {
         status_code: StatusCode::Code500InternalServerError,
         headers: {
             let mut headers = Headers::new();
-            headers.insert("content-type", ContentType::TextHtml.to_string());
-            headers.insert("charset", Charset::Utf8.to_string());
+            headers.insert("content-type", content_type_with_charset(ContentType::TextHtml, Charset::Utf8));
             headers.insert("connection", KeepAliveOrClose::KeepAlive.to_string());
             headers
         },
@@ -338,7 +337,7 @@ pub fn bad_request_400() -> HttpResponseData {
             let mut headers = Headers::new();
             headers.insert(
                 "content-type",
-                format!("{}; charset: {}", ContentType::TextHtml, Charset::Utf8),
+                content_type_with_charset(ContentType::TextHtml, Charset::Utf8),
             );
             headers.insert("connection", KeepAliveOrClose::KeepAlive.to_string());
             headers
@@ -372,7 +371,7 @@ pub fn standalone_response(status_code: StatusCode, msg: String) -> HttpResponse
             let mut headers = Headers::new();
             headers.insert(
                 "content-type",
-                format!("{}; charset: {}", ContentType::TextHtml, Charset::Utf8),
+                content_type_with_charset(ContentType::TextHtml, Charset::Utf8),
             );
 
             headers.insert("connection", KeepAliveOrClose::Close.to_string());
@@ -392,4 +391,9 @@ Content-Length:\r\n\r\n\
         )
         .into_bytes()
     })
+}
+
+
+fn content_type_with_charset(t: ContentType, c: Charset) -> String {
+    format!("{t}; charset={c}")
 }
