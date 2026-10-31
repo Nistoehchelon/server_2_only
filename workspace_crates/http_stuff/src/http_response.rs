@@ -356,7 +356,6 @@ pub fn standalone_response(status_code: StatusCode, msg: String) -> HttpResponse
         <!DOCTYPE html>
         <html lang = "en">
         <head>
-        <meta charset="utf-8">
         <title>{msg}</title>
         <style> body {{ text-align: center; }}</style>
         </head>
