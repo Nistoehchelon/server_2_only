@@ -350,7 +350,18 @@ pub fn bad_request_400() -> HttpResponseData {
 /// I do not actually know whether response is or not at any given case, but I do not want to have to care
 pub fn standalone_response(status_code: StatusCode, msg: String) -> HttpResponse {
     let body = format!(
-        r##"<!DOCTYPE html><html lang = "en"><head><title>{msg}</title><style> body {{ text-align: center; }}</style></head><body><div>{msg}</div></body></html>"##
+        r##"
+        <!DOCTYPE html>
+        <html lang = "en">
+        <head>
+        <meta charset="utf-8">
+        <title>{msg}</title>
+        <style> body {{ text-align: center; }}</style>
+        </head>
+        <body>
+        <div>{msg}</div>
+        </body>
+        </html>"##
     ).into_bytes();
     let response_data = HttpResponseData {
         body: Some(body),
