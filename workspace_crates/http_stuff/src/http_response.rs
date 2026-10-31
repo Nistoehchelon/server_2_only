@@ -336,8 +336,10 @@ pub fn bad_request_400() -> HttpResponseData {
         status_code: StatusCode::Code400BadRequest,
         headers: {
             let mut headers = Headers::new();
-            headers.insert("content-type", ContentType::TextHtml.to_string());
-            headers.insert("charset", Charset::Utf8.to_string());
+            headers.insert(
+                "content-type",
+                format!("{}; charset: {}", ContentType::TextHtml, Charset::Utf8),
+            );
             headers.insert("connection", KeepAliveOrClose::KeepAlive.to_string());
             headers
         },
@@ -362,14 +364,17 @@ pub fn standalone_response(status_code: StatusCode, msg: String) -> HttpResponse
         <div>{msg}</div>
         </body>
         </html>"##
-    ).into_bytes();
+    )
+    .into_bytes();
     let response_data = HttpResponseData {
         body: Some(body),
         status_code: status_code.clone(),
         headers: {
             let mut headers = Headers::new();
-            headers.insert("content-type", ContentType::TextHtml.to_string());
-            headers.insert("charset", Charset::Utf8.to_string());
+            headers.insert(
+                "content-type",
+                format!("{}; charset: {}", ContentType::TextHtml, Charset::Utf8),
+            );
 
             headers.insert("connection", KeepAliveOrClose::Close.to_string());
             headers
