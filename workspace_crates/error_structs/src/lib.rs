@@ -52,3 +52,9 @@ impl SomeSortOfError {
         Self { message }
     }
 }
+
+
+
+
+#[derive(Debug)]
+pub struct StreamResponseWriterError;

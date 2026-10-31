@@ -1,3 +1,4 @@
+use error_structs::StreamResponseWriterError;
 use http_stuff::{
     http_request_parsing::{
         HttpParserConfig, HttpRequestData, HttpRequestParsingError, parse_http_request,
@@ -345,14 +346,15 @@ pub async fn generate_response(
         .insert("connection", close_or_keep_alive.to_string());
     response_data
 }
+
 pub async fn write_response<S: AsyncRead + AsyncWrite + Unpin>(
     reader: &mut BufReader<S>,
     response_bytes: Vec<u8>,
     common_stream_timeout: Duration,
-) -> Result<(), ()> {
+) -> Result<(), StreamResponseWriterError> {
     if let Err(_e) = timeout(common_stream_timeout, reader.write_all(&response_bytes)).await {
         dbg!("main.rs response write timeout");
-        return Err(());
+        return Err(StreamResponseWriterError);
     }
 
     Ok(())
