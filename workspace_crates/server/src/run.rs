@@ -412,11 +412,11 @@ async fn write_http_parsing_error<S: AsyncRead + AsyncWrite + Unpin>(
             .await;
         }
         HttpRequestParsingError::ClientTimedOutBeforeItSentAnyBytes => {
-            println!(
+            tracing::debug!(
                 "{}",
                 HttpRequestParsingError::ClientTimedOutBeforeItSentAnyBytes
             );
-            println!(
+            tracing::debug!(
                 "Doing nothing, I guess, since the client sending nothing probably means they won't receive anything either."
             );
         }
@@ -424,7 +424,7 @@ async fn write_http_parsing_error<S: AsyncRead + AsyncWrite + Unpin>(
             info!("Doing nothing, because client connected but sent nothing...");
         }
         hm => {
-            eprintln!("main error, could not parse request {:?}", hm);
+            tracing::debug!("main error, could not parse request {:?}", hm);
             let err_response = standalone_response(
                 StatusCode::Code400BadRequest,
                 "400 Bad Request 🙀".to_string(),

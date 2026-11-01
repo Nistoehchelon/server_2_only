@@ -166,7 +166,7 @@ pub async fn parse_http_request<S: AsyncRead + Unpin>(
             }
         },
         None => {
-            println!(
+            tracing::debug!(
                 "x-real-ip header not found in header list, possibly cf/nginx misconfiguration?"
             );
             return Err(HttpRequestParsingError::XRealIpHeaderNotProvided);
@@ -199,7 +199,6 @@ async fn read_line_bounded<R: AsyncRead + Unpin>(
             .await
             .map_err(|elapsed| {
                 if header_bytes_so_far.is_empty() {
-                    dbg!("client timeout before client sent any bytes");
                     return HttpRequestParsingError::ClientTimedOutBeforeItSentAnyBytes;
                 }
                 dbg!(
