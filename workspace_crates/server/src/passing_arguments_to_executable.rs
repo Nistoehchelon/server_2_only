@@ -20,17 +20,18 @@ pub fn parse_args() -> Result<Args, String> {
     Ok(args)
 }
 
-pub fn will_show_version_then_would_like_to_terminate_the_program(app_executable_version: &str) -> Result<bool, String> {
+pub fn will_show_version_then_would_like_to_terminate_the_program(app_executable_version: &str) -> bool {
     let args = match parse_args() {
         Ok(args) => args,
         Err(e) => {
-            return Err(format!("Could not pass args: {e}"));
+            tracing::error!("Could not pass args: {e}");
+            return false;
         }
     };
 
     if args.version {
         println!("App version: {app_executable_version}", );
-        return Ok(true);
+        return true;
     }
-    Ok(false)
+    false
 }
