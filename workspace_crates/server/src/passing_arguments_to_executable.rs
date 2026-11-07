@@ -20,7 +20,7 @@ pub fn parse_args() -> Result<Args, String> {
     Ok(args)
 }
 
-pub fn will_show_version_then_exit(app_executable_version: &str) -> Result<bool, String> {
+pub fn will_show_version_then_would_like_to_terminate_the_program(app_executable_version: &str) -> Result<bool, String> {
     let args = match parse_args() {
         Ok(args) => args,
         Err(e) => {

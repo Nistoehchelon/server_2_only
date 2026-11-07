@@ -45,7 +45,7 @@ pub async fn server_run_inner(
     background_tasks: Option<BackgroundTasks>,
     bg_tasks_cancellation_token: Option<CancellationToken>,
 ) -> std::io::Result<()> {
-    match passing_arguments_to_executable::will_show_version_then_exit(&app_executable_version) {
+    match passing_arguments_to_executable::will_show_version_then_would_like_to_terminate_the_program(&app_executable_version) {
         Ok(exit) => {
             if exit {
                 return Ok(());

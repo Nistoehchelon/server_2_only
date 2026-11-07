@@ -4,7 +4,7 @@ pub mod check_and_consume_buckets;
 pub mod handler_fn;
 pub mod log_tracing;
 pub mod passing_arguments_to_executable;
-pub use passing_arguments_to_executable::will_show_version_then_exit;
+pub use passing_arguments_to_executable::will_show_version_then_would_like_to_terminate_the_program;
 pub mod run;
 pub mod shutdown_signal;
 pub use handler_fn::HandlerFn;
