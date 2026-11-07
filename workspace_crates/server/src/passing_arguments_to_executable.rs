@@ -19,3 +19,18 @@ pub fn parse_args() -> Result<Args, String> {
 
     Ok(args)
 }
+
+pub fn will_show_version_then_exit(app_executable_version: &str) -> Result<bool, String> {
+    let args = match parse_args() {
+        Ok(args) => args,
+        Err(e) => {
+            return Err(format!("Could not pass args: {e}"));
+        }
+    };
+
+    if args.version {
+        println!("App version: {app_executable_version}", );
+        return Ok(true);
+    }
+    Ok(false)
+}

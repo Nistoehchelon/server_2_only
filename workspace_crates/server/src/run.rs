@@ -13,7 +13,11 @@ use crate::{
     buckets_for_requests::{
         GlobalBuckets, IpBuckets, TimeBucket, TokenAndTimeBuckets, TokenAndTimeBucketsAndLastSeen,
         TokenBucket,
-    }, check_and_consume_buckets::check_and_consume_buckets, handler_fn::HandlerFn, log_tracing, parse_args, server_builder_typestate::{BackgroundTasks},
+    },
+    check_and_consume_buckets::check_and_consume_buckets,
+    handler_fn::HandlerFn,
+    log_tracing, passing_arguments_to_executable,
+    server_builder_typestate::BackgroundTasks,
 };
 
 use std::{
@@ -39,20 +43,19 @@ pub async fn server_run_inner(
     app_executable_version: String,
     handler: HandlerFn,
     background_tasks: Option<BackgroundTasks>,
-    bg_tasks_cancellation_token: Option<CancellationToken>
+    bg_tasks_cancellation_token: Option<CancellationToken>,
 ) -> std::io::Result<()> {
-    let args = match parse_args::parse_args() {
-        Ok(args) => args,
-        Err(e) => {
-            eprintln!("{e}");
-            return Ok(());
+    match passing_arguments_to_executable::will_show_version_then_exit(&app_executable_version) {
+        Ok(exit) => {
+            if exit {
+                return Ok(());
+            }
         }
-    };
-
-    if args.version {
-        println!("App version: {}", app_executable_version);
-        return Ok(());
+        Err(err) => {
+            tracing::debug!("{err}");
+        }
     }
+
     tracing::info!("Server version: {}", app_executable_version);
 
     // File appender (rotates daily)
