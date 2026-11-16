@@ -202,7 +202,9 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
         {
             Ok(Ok(data)) => data,
             Ok(Err(e)) => {
-                tracing::error!("{}", e.clone());
+                //     ClientSentNothing error often clutters the logs, so I guess I do debug...
+ 
+                tracing::debug!("{}", e.clone());
                 write_http_parsing_error(e, reader, server_config.common_stream_timeout).await;
                 break;
             }
