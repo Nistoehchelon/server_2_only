@@ -165,14 +165,14 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
             .into_u64()
             .to_string(),
     );
-    info!("New Connection...");
+    tracing::debug!("New Connection...");
     let keep_alive_max_requests_per_connection =
         server_config.keep_alive_max_requests_per_connection;
     let mut requests_count = 0;
     let mut ip: Option<IpAddr> = None;
     loop {
         //dbg!("Peer with IP ", peer_ip, "just issued a request");
-        tracing::info!("Processing a request");
+        tracing::debug!("Processing a request");
         if let Err(error_response) = check_and_consume_buckets(
             Instant::now(),
             &peer_ip,
@@ -202,12 +202,12 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
         {
             Ok(Ok(data)) => data,
             Ok(Err(e)) => {
-                info!("{}", e.clone());
+                tracing::error!("{}", e.clone());
                 write_http_parsing_error(e, reader, server_config.common_stream_timeout).await;
                 break;
             }
             Err(e) => {
-                dbg!("main.rs parse_http_request timed out", e);
+                tracing::error!("main.rs parse_http_request timed out {}", e);
                 write_http_parsing_error(
                     HttpRequestParsingError::StreamTimeoutError,
                     reader,
@@ -220,13 +220,13 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
         match ip {
             None => {
                 ip = Some(request_data.x_real_ip);
-                info!("Retrieved the user IP {}", request_data.x_real_ip);
+                tracing::debug!("Retrieved the user IP {}", request_data.x_real_ip);
                 Span::current().record("remote_ip", request_data.x_real_ip.to_string());
             }
             Some(ip_unwrapped) => {
                 if request_data.x_real_ip != ip_unwrapped {
                     // I mean, I dunno if this can even happen in one kept-alive connection or if it will just drop and a new one, unrelated to current will be init'ed... But this can't hurt? Maybe? I dunno
-                    info!(
+                    tracing::warn!(
                         "User ip changed from {} to {}!",
                         ip_unwrapped, request_data.x_real_ip
                     );
@@ -235,7 +235,7 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
                 }
             }
         }
-        info!(
+        tracing::debug!(
             "User is accessing method {} and path {}",
             request_data.method.clone(),
             request_data.path_and_query.clone()
@@ -277,7 +277,7 @@ pub async fn handle_stream<S: AsyncRead + AsyncWrite + Unpin>(
             true
         };
         if server_wants_to_close {
-            tracing::info!("Server instructed me to close, so closing the connection");
+            tracing::debug!("Server instructed me to close, so closing the connection");
             break;
         }
     }
@@ -417,7 +417,7 @@ async fn write_http_parsing_error<S: AsyncRead + AsyncWrite + Unpin>(
             );
         }
         HttpRequestParsingError::ClientSentNothing => {
-            info!("Doing nothing, because client connected but sent nothing...");
+            tracing::debug!("Doing nothing, because client connected but sent nothing...");
         }
         hm => {
             tracing::debug!("main error, could not parse request {:?}", hm);

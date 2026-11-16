@@ -210,7 +210,7 @@ async fn read_line_bounded<R: AsyncRead + Unpin>(
             })?
             .map_err(|e| {
                 if header_bytes_so_far.is_empty() {
-                    tracing::info!("Nothing from client...");
+                    tracing::debug!("Nothing from client...");
                     return HttpRequestParsingError::ClientSentNothing;
                 }
                 dbg!(
